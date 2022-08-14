@@ -8,11 +8,11 @@ static uint64_t decode_od(od_t od)
 {
     if (od.type == IMM) 
     {
-        return od.imm;
+        return *(uint64_t *)&od.imm;// int !!! put origin value at uint64_t addr 
     }
     else if (od.type == REG) 
     {
-        return *od.reg1;   
+        return (uint64_t)od.reg1;   
     }
     else 
     {
@@ -83,7 +83,14 @@ void instruction_cycle()
 
 void init_handler_table() 
 {
-    handler_table[add_reg_reg] = add_reg_reg_handler;
+    handler_table[mov_reg_reg] = &add_reg_reg_handler;// + &???
+    handler_table[add_reg_reg] = &add_reg_reg_handler;
+}
+
+void move_reg_reg_handler(uint64_t src, uint64_t dst) 
+{
+    *(uint64_t *)dst = *(uint64_t *)src ;
+    reg.rip = reg.rip + sizeof(inst_t);
 }
 
 void add_reg_reg_handler(uint64_t src, uint64_t dst)

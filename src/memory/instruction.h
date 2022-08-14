@@ -5,14 +5,19 @@
 
 typedef enum OP
 {
-	MOV,// 0
-	PUSH,// 1
-	CALL, // 2
-	add_reg_reg // 3
+	mov_reg_reg,	// 0
+	mov_reg_mem,	// 1
+	mov_mem_reg,	// 2
+	push_reg,		// 3
+	pop_reg,		// 4
+	call,			// 5
+	ret,			// 6
+	add_reg_reg 	// 7
 } op_t;
 
 typedef enum OD_TYPE 
 {
+	EMPTY,
 	IMM, REG,
 	MM_IMM, MM_REG, MM_IMM_REG, MM_REG1_REG2, 
 	MM_IMM_REG1_REG2, MM_REG2_S, MM_IMM_REG2_S, 
@@ -48,5 +53,8 @@ typedef void (* handler_t)(uint64_t, uint64_t);
 handler_t handler_table[NUM_INSTRTYPE];
 
 void instruction_cycle();
+
 void init_handler_table();
+
+void move_reg_reg_handler(uint64_t src, uint64_t dst);
 void add_reg_reg_handler(uint64_t src, uint64_t dst);
