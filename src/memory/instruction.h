@@ -1,16 +1,14 @@
 #include<stdio.h>
 #include<stdint.h>
 
-#define MM_LEN 1000
-
-uint8_t mm[MM_LEN];// every 8 byte
+#define NUM_INSTRTYPE 30
 
 typedef enum OP
 {
 	MOV,// 0
 	PUSH,// 1
-	CALL // 2
-
+	CALL, // 2
+	add_reg_reg // 3
 } op_t;
 
 typedef enum OD_TYPE 
@@ -31,7 +29,7 @@ typedef struct OD
 	uint64_t *reg1;// addr
 	uint64_t *reg2;// addr
 
-    char code[100];
+    
 } od_t;
 
 
@@ -40,11 +38,15 @@ typedef struct INSTRUCT_STRUCT
 	op_t op; // mov push
 	od_t src; 
 	od_t dst;
+
+	char code[100];
 } inst_t;
 
+// pointor function
+typedef void (* handler_t)(uint64_t, uint64_t);
 
-#define INST_LEN 100
+handler_t handler_table[NUM_INSTRTYPE];
 
-inst_t program[INST_LEN];
-
-uint64_t decode_od(od_t od);
+void instruction_cycle();
+void init_handler_table();
+void add_reg_reg_handler(uint64_t src, uint64_t dst);

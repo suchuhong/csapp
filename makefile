@@ -5,7 +5,7 @@ EXE = program
 
 SRC = ./src
 
-CODE = $(SRC)/memory/instruction.c $(SRC)/disk/code.c $(SRC)/main.c
+CODE = $(SRC)/memory/instruction.c $(SRC)/memory/dram.c $(SRC)/disk/code.c $(SRC)/cpu/mmu.c $(SRC)/main.c
 
 .PHONY: program
 main:
