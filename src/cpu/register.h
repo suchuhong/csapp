@@ -1,3 +1,7 @@
+
+#ifndef __register_H__
+#define __register_H__
+
 #include<stdio.h>
 #include<stdint.h>
 
@@ -105,7 +109,7 @@ typedef struct REG_STRUCT
 reg_t reg;
 
 
-
+#endif
 
 
 

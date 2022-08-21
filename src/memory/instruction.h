@@ -1,3 +1,6 @@
+#ifndef __INSTRUCTION_H__
+#define __INSTRUCTION_H__
+
 #include<stdio.h>
 #include<stdint.h>
 
@@ -58,3 +61,5 @@ void init_handler_table();
 
 void move_reg_reg_handler(uint64_t src, uint64_t dst);
 void add_reg_reg_handler(uint64_t src, uint64_t dst);
+
+#endif
