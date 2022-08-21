@@ -22,11 +22,17 @@ int main()
 	reg.rip = (uint64_t)&program[11];// pc
 
 	// init memery
-	mm[va2pa(0x7fffffffddf0)] = 0x0; // rbp  stack bottom 
-	mm[va2pa(0x7fffffffdde8)] = 0x0;
-	mm[va2pa(0x7fffffffdde0)] = 0xabcd;
-	mm[va2pa(0x7fffffffddd8)] = 0x12340000;
-	mm[va2pa(0x7fffffffddd0)] = 0x00000000; // rsp stack top
+	// write memory with cache
+	write64bits_dram(va2pa(0x7fffffffddf0), 0x0);// rbp  stack bottom 
+	write64bits_dram(va2pa(0x7fffffffdde8), 0x0);
+	write64bits_dram(va2pa(0x7fffffffdde0), 0xabcd);
+	write64bits_dram(va2pa(0x7fffffffddd8), 0x12340000);
+	write64bits_dram(va2pa(0x7fffffffddd0), 0x0);// rsp stack top
+
+	uint64_t pa = va2pa(0x7fffffffdde0);
+
+	printf("%16lx\n", *((uint64_t *)(&mm[pa])));
+	printf("%16lx\n", read64bits_dram(pa));
 
 	// run inst
 
@@ -60,12 +66,12 @@ int main()
 	}
 
 	// verify memory
-	
-	match = match && (mm[va2pa(0x7fffffffddf0)] = 0x0); // rbp  stack bottom 
-	match = match && (mm[va2pa(0x7fffffffdde8)] = 0x1234abcd);
-	match = match && (mm[va2pa(0x7fffffffdde0)] = 0xabcd );
-	match = match && (mm[va2pa(0x7fffffffddd8)] = 0x12340000 );
-	match = match && (mm[va2pa(0x7fffffffddd0)] = 0x0 ); // rsp stack top
+	// read with cache
+	match = match && ( read64bits_dram(va2pa(0x7fffffffddf0)) == 0x0 ); // rbp  stack bottom 
+	match = match && ( read64bits_dram(va2pa(0x7fffffffdde8)) == 0x1234abcd );
+	match = match && ( read64bits_dram(va2pa(0x7fffffffdde0)) == 0xabcd );
+	match = match && ( read64bits_dram(va2pa(0x7fffffffddd8)) == 0x12340000 );
+	match = match && ( read64bits_dram(va2pa(0x7fffffffddd0)) == 0x0 ); // rsp stack top
 
 	if(match == 1) 
 	{
@@ -83,77 +89,5 @@ int main()
 
 
 
-/*
 
-rax            0x12340000          305397760
-rbx            0x555555555190      93824992235920
-rcx            0x555555555190      93824992235920
-rdx            0xabcd              43981
-rsi            0x7fffffffdee8      140737488346856
-rdi            0x1                 1
-rbp            0x7fffffffddf0      0x7fffffffddf0
-rsp            0x7fffffffddd0      0x7fffffffddd0
-r8             0x0                 0
-r9             0x7ffff7fe0d60      140737354009952
-r10            0x1                 1
-r11            0x0                 0
-r12            0x555555555040      93824992235584
-r13            0x7fffffffdee0      140737488346848
-r14            0x0                 0
-r15            0x0                 0
-rip            0x555555555172      0x555555555172 <main+36>
-eflags         0x202               [ IF ]
-cs             0x33                51
-ss             0x2b                43
-ds             0x0                 0
-es             0x0                 0
-fs             0x0                 0
-gs             0x0                 0
-
-
-rax            0x1234abcd          305441741
-rbx            0x555555555190      93824992235920
-rcx            0x555555555190      93824992235920
-rdx            0x12340000          305397760
-rsi            0xabcd              43981
-rdi            0x12340000          305397760
-rbp            0x7fffffffddf0      0x7fffffffddf0
-rsp            0x7fffffffddd0      0x7fffffffddd0
-r8             0x0                 0
-r9             0x7ffff7fe0d60      140737354009952
-r10            0x1                 1
-r11            0x0                 0
-r12            0x555555555040      93824992235584
-r13            0x7fffffffdee0      140737488346848
-r14            0x0                 0
-r15            0x0                 0
-rip            0x555555555181      0x555555555181 <main+51>
-eflags         0x202               [ IF ]
-cs             0x33                51
-ss             0x2b                43
-ds             0x0                 0
-es             0x0                 0
-fs             0x0                 0
-gs             0x0                 0
-
-0x7fffffffddd0:	0x00000000	0x00000000	0x12340000	0x00000000
-0x7fffffffdde0:	0x0000abcd	0x00000000	0x1234abcd	0x00000000
-0x7fffffffddf0:	0x00000000	0x00000000
-
-*/
-
-/**
- 
-
-memory            data   64bit                   64bit
-0x7fffffffddd0:	0x00000000	0x00000000	0x12340000	0x00000000
-0x7fffffffdde0:	0x0000abcd	0x00000000	0x00000000	0x00000000
-0x7fffffffddf0:	0x00000000	0x00000000
-
-0x7fffffffdde0 - 0x7fffffffddd0 = 0x10 = 16
-every memory 1 byte -> 16 byte
-
-16 byte = 2 x 8 byte = 2 x 64 bit
-
-**/
 
